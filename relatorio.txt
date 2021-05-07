@@ -1,0 +1,40 @@
+1. Sobre a implementação
+
+Sofremos bastante para implementar o trabalho usando Haskell, mas tivemos muitas dificuldades em configurar o ambiente e se acostumar com a sintaxe. Desse modo, seguimos usando o Javascript rodando sobre a engine Node, procurando sempre estarmos atentos ao uso da sintaxe funcional. Buscamos usar os principais conceitos da programação funcional, como o uso das funções puras(na implementação sinalizamos a única função impura utilizada), o uso da composição de funções e a imutabilidade(que, ao contrário do que diz o senso comum, apenas colocar uma variável como "const" não garante que ela é imutável, já que se um objeto tem profundidade > 1, o que está dentro dele pode ser alterado). Assim, evitamos que o estado da aplicação seja compartilhado e, por conseguinte, não tenhamos efeitos colaterais indesejados.
+
+2. Sobre o problema
+
+Como descrito em diversos lugares sobre o jogo original e visto também com a nova regra de infecção proposta, após uma quantidade n de oscilações finitas, os pontos irão se agrupár em populações e irão coexistir. Essas populações podem ser de três tipos diferentes:
+
+- Tipo 1: eternas que não criam novos pontos de vida e os pontos de vida existentes estão em equilíbrio
+- Tipo 2: oscilam no mesmo lugar, sem se mover, em um ciclo
+- Tipo 3: oscilam em movimento
+
+Esses três tipos não irão morrer ou entrar em desequilíbrio sem influência externa. A regra nova de infecção, nas simulações que rodamos, costuma ser apenas relevante nos níveis iniciais. Ela rapidamente extermina a população adjacente e logo desaparece, qualquer população que sobre, irá desaparecer ou se agrupar em um dos tipos descritos.
+
+3. Sobre a divisão de trabalho
+
+O trabalho foi realizado pelos alunos Eduardo Martins e Matheus Erthal.
+Eduardo ficou responsável pela implementação randômica e pela leitura da entrada do terminal.
+Matheus ficou responsável pela implementação por arquivo e a leitura do arquivo.
+A função principal de avaliação e mudança de estado da grade e a criação do relatório foi dividido pelos dois.
+
+4. Como rodar o projeto
+
+O projeto foi desenvolvido usando Javascript e Node.js. Para rodar, basta ter o Node ou npm instalado, entrar na pasta do projeto e rodar o comando "node index.js".
+O arquivo usado para representar o estado inicial da grade é o arquivo entrada.txt.
+
+5. Exemplos de uso
+
+Grade Tipo 1:
+1 1 0
+1 1 0
+0 0 0
+Grade Tipo 2:
+0 1 0
+0 1 0
+0 1 0
+Grade Tipo 3:
+1 1 1
+0 0 1
+0 1 0
