@@ -1,15 +1,41 @@
 const readline = require("readline");
+const fs = require('fs')
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-const gera_aleatorio = (min, max) => ~~(Math.random() * (max - min + 1)) + min;
+rl.question("Bem vindo ao Jogo da Vida!\nEscolha entre o modo por arquivo(A) ou modo randômico(R): ", function(modo) {
+    rl.question("Digite o número de iterações máxima: ", function(i) {
+        if(modo == "A"){
+            modo_arquivo(rl, i);
+        }else if(modo == "R"){
+            modo_randomico(rl, i);
+        }
+    }); 
+});
 
-const inicializa_grade = (i, j) => [...Array(parseInt(i))].map(() => [...Array(parseInt(j))].map(() => inicializa_ponto()))
+const modo_arquivo = (rl, i) => {
+    try {
+        const lines = fs.readFileSync('entrada.txt').toString().split("\n");
+        const estado_inicial = [...Array(parseInt(lines.length))].map((_, index) => lines[index].split(" ").map(str => parseInt(str)));
+        console.warn(estado_inicial);
+        console.warn(`${iterador(estado_inicial, null, i, 0)} iterações`);
+        rl.close();
+    } catch (err) {
+        console.error(err)
+    }
+}
 
-const inicializa_ponto = () => gera_aleatorio(0, 2);
+const modo_randomico = (rl, i) => {
+    rl.question("Digite o número de linhas: ", function(n_linhas) {
+        rl.question("Digite o número de colunas: ", function(n_colunas) {
+            jogo_da_vida_randomico(n_linhas, n_colunas, i);
+            rl.close();
+        });
+    });
+}
 
 const passo = grade => grade.map((linha, i) => linha.map((celula, j) => proximo_estado(grade, i, j)));
 
@@ -100,35 +126,37 @@ const proximo_estado = (grade, i, j) => {
 
 }
 
-const equal_list = (lis) => !lis.map((elemento, index) => passo(lis)[index] == elemento).includes(false)
+const equal_list = (lis1, lis2) => !lis1.map((elemento, index) => lis2[index] == elemento).includes(false)
 
-const equal_grade = (grade) => !grade.map((lis) => equal_list(lis) ).includes(false)
+const equal_grade = (grade, grade2) => !grade.map((elemento, index) => equal_list(elemento, grade2[index]) ).includes(false)
 
-const jogo_da_vida = (linhas, colunas, i) => {
-    console.log(`linhas: ${linhas} colunas: ${colunas} iterações: ${i}`);
-    const estado_inicial = inicializa_grade(linhas, colunas);
-    console.warn(estado_inicial);
-    console.warn(passo(estado_inicial));
+const iterador = (grade_atual, grade_anterior, max_iteracoes, iteracao_atual) => {
+    if(iteracao_atual == max_iteracoes){
+        console.warn(grade_atual);
+        console.warn("A grade chegou ao número de iterações máximo!");
+        return iteracao_atual;
+    }
+    if(grade_anterior != null && equal_grade(grade_atual, grade_anterior)){
+        console.warn(grade_atual);
+        console.warn("A grade foi estabilizada!");
+        return iteracao_atual;
+    }
+    return iterador(passo(grade_atual), grade_atual, max_iteracoes, iteracao_atual+1);
 }
 
-rl.question("Digite o número de linhas: ", function(n_linhas) {
-    rl.question("Digite o número de colunas: ", function(n_colunas) {
-        rl.question("Digite o número de iterações: ", function(i) {
-            jogo_da_vida(n_linhas, n_colunas, i);
-            rl.close(); 
-        });
-    });
-});
+const jogo_da_vida_randomico = (linhas, colunas, i) => {
+    const estado_inicial = inicializa_grade(linhas, colunas);
+    console.warn(estado_inicial);
+    console.warn(`${iterador(estado_inicial, null, i, 0)} iterações`);
+}
+
+const gera_aleatorio = (min, max) => ~~(Math.random() * (max - min + 1)) + min;
+
+const inicializa_grade = (i, j) => [...Array(parseInt(i))].map(() => [...Array(parseInt(j))].map(() => inicializa_ponto()))
+
+const inicializa_ponto = () => gera_aleatorio(0, 2);
 
 rl.on("close", function() {
     console.log("\nFim do programa");
     process.exit(0);
 });
-
-[
-    [0,0,0,0,0],
-    0,1,1,0,0,
-    0,1,0,1,0,
-    0,0,1,1,0,
-    0,0,0,0,0
-]
